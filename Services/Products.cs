@@ -47,14 +47,14 @@ public class ProductServices(DatabaseContext context)
 
     public bool UpdateProduct(ProductsDto dto)
     {
-        var product = _context.Products
-            .FirstOrDefault(p => p.ProductName == dto.ProductName);
+        var product = _context.Products.FirstOrDefault(p => p.ProductId == dto.ProductId);
 
         if (product is null) return false;
 
         var categoryExists = _context.Category.Any(c => c.CategoryId == dto.CategoryId);
         if (!categoryExists) return false;
 
+        product.ProductName = dto.ProductName;
         product.ProductDescription = dto.ProductDescription;
         product.ProductImage = dto.ProductImage;
         product.Price = dto.Price;
@@ -64,6 +64,7 @@ public class ProductServices(DatabaseContext context)
         _context.SaveChanges();
         return true;
     }
+
 
 
 }
