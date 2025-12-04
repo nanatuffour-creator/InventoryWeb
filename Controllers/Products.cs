@@ -39,16 +39,20 @@ namespace InventoryWeb.Controllers
         //     return Ok(new { message = "Product updated successfully" });
         // }
 
-        [HttpPut("edit")]
-        public IActionResult Edit([FromBody] ProductsDto dto)
+        [HttpPut("{id}")]
+        public IActionResult UpdateProduct(int id, [FromBody] UpdateProductDto dto)
         {
+            if (id != dto.ProductId)
+                return BadRequest(new { message = "Product ID mismatch" });
+
             var success = _productServices.UpdateProduct(dto);
 
             if (!success)
                 return BadRequest(new { message = "Product not found or invalid category" });
 
-            return Ok(new { message = "Product updated successfully" });
+            return Ok(new { message = "Product updated" });
         }
+
 
 
 

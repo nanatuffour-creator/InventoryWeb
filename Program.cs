@@ -11,7 +11,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAngularApp",
         policy =>
         {
-            policy.WithOrigins("http://localhost:4200") // Angular dev server
+            policy.WithOrigins("http://localhost:4200")
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });
@@ -24,7 +24,10 @@ builder.Services.AddDbContextPool<DatabaseContext>((o) =>
 
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<Categories>();
-builder.Services.AddTransient<ProductServices>();
+builder.Services.AddScoped<ProductServices>();
+builder.Services.AddScoped<SupplierService>();
+builder.Services.AddScoped<CustomerService>();
+builder.Services.AddScoped<InvoiceService>();
 
 builder.Services.AddControllers().AddJsonOptions(options =>
     {

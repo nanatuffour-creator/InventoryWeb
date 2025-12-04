@@ -1,11 +1,16 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace InventoryWeb.Entities;
 
-public class Invoices
+public class Invoice
 {
-    public int Id { get; set; }
+    [Key]
+    public int InvoiceId { get; set; }
     public int CustomerId { get; set; }
-    public DateTime InvoiceDate { get; set; } = DateTime.Now;
     public decimal TotalAmount { get; set; }
+    public Customer? Customer { get; set; }
+    public DateOnly CreatedAt { get; set; } = DateOnly.FromDateTime(DateTime.UtcNow);
+    public List<InvoiceItem>? InvoiceItems { get; set; }
 }
+

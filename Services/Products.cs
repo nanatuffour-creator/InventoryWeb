@@ -45,18 +45,19 @@ public class ProductServices(DatabaseContext context)
         return true;
     }
 
-    public bool UpdateProduct(ProductsDto dto)
+    public bool UpdateProduct(UpdateProductDto dto)
     {
         var product = _context.Products.FirstOrDefault(p => p.ProductId == dto.ProductId);
 
-        if (product is null) return false;
+        if (product == null)
+            return false;
 
-        var categoryExists = _context.Category.Any(c => c.CategoryId == dto.CategoryId);
-        if (!categoryExists) return false;
+        if (!_context.Category.Any(c => c.CategoryId == dto.CategoryId))
+            return false;
 
         product.ProductName = dto.ProductName;
-        product.ProductDescription = dto.ProductDescription;
         product.ProductImage = dto.ProductImage;
+        product.ProductDescription = dto.ProductDescription;
         product.Price = dto.Price;
         product.StockQuantity = dto.StockQuantity;
         product.CategoryId = dto.CategoryId;

@@ -4,6 +4,7 @@ using InventoryWeb.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,13 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InventoryWeb.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20251202151748_AddCustomers")]
+    partial class AddCustomers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.0")
+                .HasAnnotation("ProductVersion", "9.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -61,61 +64,6 @@ namespace InventoryWeb.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Customers");
-                });
-
-            modelBuilder.Entity("InventoryWeb.Entities.Invoice", b =>
-                {
-                    b.Property<int>("InvoiceId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("InvoiceId"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("CustomerId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("TotalAmount")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("InvoiceId");
-
-                    b.HasIndex("CustomerId");
-
-                    b.ToTable("Invoices", (string)null);
-                });
-
-            modelBuilder.Entity("InventoryWeb.Entities.InvoiceItem", b =>
-                {
-                    b.Property<int>("InvoiceItemId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("InvoiceItemId"));
-
-                    b.Property<int>("InvoiceId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("SellingPrice")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("InvoiceItemId");
-
-                    b.HasIndex("InvoiceId");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("InvoiceItems", (string)null);
                 });
 
             modelBuilder.Entity("InventoryWeb.Entities.ProductsEntities", b =>
@@ -217,36 +165,6 @@ namespace InventoryWeb.Migrations
                     b.ToTable("User");
                 });
 
-            modelBuilder.Entity("InventoryWeb.Entities.Invoice", b =>
-                {
-                    b.HasOne("InventoryWeb.Entities.Customer", "Customer")
-                        .WithMany("Invoices")
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Customer");
-                });
-
-            modelBuilder.Entity("InventoryWeb.Entities.InvoiceItem", b =>
-                {
-                    b.HasOne("InventoryWeb.Entities.Invoice", "Invoice")
-                        .WithMany("InvoiceItems")
-                        .HasForeignKey("InvoiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("InventoryWeb.Entities.ProductsEntities", "Product")
-                        .WithMany("InvoiceItems")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Invoice");
-
-                    b.Navigation("Product");
-                });
-
             modelBuilder.Entity("InventoryWeb.Entities.ProductsEntities", b =>
                 {
                     b.HasOne("InventoryWeb.Entities.CategoryEntities", "Category")
@@ -261,21 +179,6 @@ namespace InventoryWeb.Migrations
             modelBuilder.Entity("InventoryWeb.Entities.CategoryEntities", b =>
                 {
                     b.Navigation("Products");
-                });
-
-            modelBuilder.Entity("InventoryWeb.Entities.Customer", b =>
-                {
-                    b.Navigation("Invoices");
-                });
-
-            modelBuilder.Entity("InventoryWeb.Entities.Invoice", b =>
-                {
-                    b.Navigation("InvoiceItems");
-                });
-
-            modelBuilder.Entity("InventoryWeb.Entities.ProductsEntities", b =>
-                {
-                    b.Navigation("InvoiceItems");
                 });
 #pragma warning restore 612, 618
         }

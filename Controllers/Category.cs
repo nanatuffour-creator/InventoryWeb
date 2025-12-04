@@ -25,5 +25,12 @@ namespace InventoryWeb.Controllers
             var all = _categories.GetCategories();
             return Ok(all);
         }
+
+        [HttpDelete("delete/{catName}")]
+        public IActionResult Delete(string catName)
+        {
+            var all = _categories.DeleteCategory(catName);
+            return Ok(new { message = "Deleted Sucessfully" });
+        }
     }
 }

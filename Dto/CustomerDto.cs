@@ -1,14 +1,11 @@
 using System;
 
-namespace InventoryWeb.Entities;
+namespace InventoryWeb.Dto;
 
-public class Customer
+public class CustomerDto
 {
     public int Id { get; set; }
     public string? Name { get; set; }
     public string? Email { get; set; }
     public string? Phone { get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.Now;
-    public List<Invoice>? Invoices { get; set; }
-
 }

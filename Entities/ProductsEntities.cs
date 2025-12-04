@@ -16,7 +16,7 @@ public class ProductsEntities
     public int CategoryId { get; set; }
     // Navigation Property (Each product belongs to one Category)
     public CategoryEntities? Category { get; set; }
-
+    public ICollection<InvoiceItem> InvoiceItems { get; set; } = [];
 }
 
 

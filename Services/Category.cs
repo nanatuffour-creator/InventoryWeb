@@ -22,8 +22,19 @@ public class Categories(DatabaseContext context)
 
     public IEnumerable<CategoryEntities> GetCategories()
     {
-        return _context.Category.ToList();
+        return [.. _context.Category];
     }
 
+    public bool DeleteCategory(string catName)
+    {
+        var categoryName = _context.Category.FirstOrDefault(c => c.Name == catName);
 
+        if (categoryName == null)
+        {
+            return false;
+        }
+        _context.Category.Remove(categoryName);
+        _context.SaveChanges();
+        return true;
+    }
 }
