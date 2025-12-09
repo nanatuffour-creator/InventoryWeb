@@ -26,6 +26,12 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options) : DbCont
             .HasForeignKey(p => p.CategoryId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        modelBuilder.Entity<Invoice>()
+            .HasOne(p => p.User)
+            .WithMany(c => c.Invoices)
+            .HasForeignKey(p => p.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
         modelBuilder.Entity<ProductsEntities>()
             .Property(p => p.Price)
             .HasPrecision(18, 2);

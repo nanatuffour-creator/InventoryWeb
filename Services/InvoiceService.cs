@@ -39,32 +39,32 @@ public class InvoiceService(DatabaseContext context)
 
         _context.Invoices.Add(invoice);
         _context.SaveChanges();
-
-
     }
 
     public IEnumerable<InvoiceGetDto> GetInvoices()
     {
-        var result = from u in _context.Invoices
-                     join m in _context.InvoiceItems on u.InvoiceId equals m.InvoiceId
-                     join s in _context.Customers on u.CustomerId equals s.Id
-                     join g in _context.Products on m.ProductId equals g.ProductId
-                     select new InvoiceGetDto
-                     {
-                         InvoiceId = u.InvoiceId,
-                         CustomerName = s.Name,
-                         Total = u.TotalAmount,
-                         CreatedAt = u.CreatedAt,
-                         Items = u.InvoiceItems!.Select(m => new InvoiceItemGetDto
-                         {
-                             ProductName = g.ProductName,
-                             Stock = m.Quantity,
-                             Quantity = m.SellingPrice,
-                             ProductPrice = g.Price
-                         }).ToList()
-                     };
+        var result = _context.Invoices
+            .Include(i => i.Customer)
+            .Include(i => i.InvoiceItems)
+                .ThenInclude(ii => ii.Product)
+            .Select(u => new InvoiceGetDto
+            {
+                InvoiceId = u.InvoiceId,
+                CustomerName = u.Customer!.Name,
+                Total = u.TotalAmount,
+                CreatedAt = u.CreatedAt,
 
-        return [.. result];
+                Items = u.InvoiceItems!.Select(item => new InvoiceItemGetDto
+                {
+                    ProductName = item.Product!.ProductName,
+                    Stock = item.Quantity,
+                    Quantity = item.Quantity,
+                    ProductPrice = item.SellingPrice
+
+                }).ToList()
+            }).ToList();
+
+        return result;
     }
 
     public Invoice CreateInvoice(InvoiceRequestDto request)
