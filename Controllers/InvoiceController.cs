@@ -32,5 +32,12 @@ namespace InventoryWeb.Controllers
                 message = "Invoice Added Sucessfully"
             });
         }
+
+        [HttpGet("total")]
+        public IActionResult GetTotal()
+        {
+            var total = _invoiceService.GetInvoicesTotal();
+            return Ok(total);
+        }
     }
 }

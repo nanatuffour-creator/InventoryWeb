@@ -55,7 +55,7 @@ public class InvoiceService(DatabaseContext context)
                          CustomerName = s.Name,
                          Total = u.TotalAmount,
                          CreatedAt = u.CreatedAt,
-                         Items = u.InvoiceItems.Select(m => new InvoiceItemGetDto
+                         Items = u.InvoiceItems!.Select(m => new InvoiceItemGetDto
                          {
                              ProductName = g.ProductName,
                              Stock = m.Quantity,
@@ -74,7 +74,7 @@ public class InvoiceService(DatabaseContext context)
             CustomerId = request.CustomerId,
             TotalAmount = request.TotalAmount,
             CreatedAt = request.CreatedAt,
-            InvoiceItems = [.. request.Items.Select(i => new InvoiceItem
+            InvoiceItems = [.. request.Items!.Select(i => new InvoiceItem
             {
                 ProductId = i.ProductId,
                 SellingPrice = i.SellingPrice,
@@ -86,6 +86,11 @@ public class InvoiceService(DatabaseContext context)
         _context.SaveChanges();
 
         return invoice;
+    }
+
+    public decimal GetInvoicesTotal()
+    {
+        return _context.Invoices.Sum(i => i.TotalAmount);
     }
 
 }
