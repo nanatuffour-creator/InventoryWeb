@@ -13,7 +13,7 @@ namespace InventoryWeb.Controllers
         private readonly PurchaseService _service  = service;
 
         [HttpPost("add")]
-        public IActionResult AddPurchase(PurchaseDto dto)
+        public IActionResult AddPurchase([FromBody]PurchaseDto dto)
         {
             _service.Add(dto);
             return Ok(new {message="Purchase Added"});
