@@ -39,26 +39,6 @@ public class PurchaseService(DatabaseContext context)
 
     public IEnumerable<GetPurchaseDto> GetPurchase()
     {
-        // var result = _context.Purchases
-        // .Include(i => i.PurchaseOrders)
-        // .Include(y => y.Suppliers)
-        // .ThenInclude(m => m.Product)
-        // .Select(j => new GetPurchaseDto
-        // {
-        //     PurchaseId = j.PurchaseId,
-        //     SupplierName = j.Suppliers.Name,
-        //     Amount = j.Amount,
-        //     Date = j.Date,
-        //     Stat = j.Stat,
-        //     PurchaseOrders = j.PurchaseOrders.Select(x => new GetPurchaseOrdersDto
-        //     {
-        //         ProductName = j.Product.Name,
-        //         CostPrice = j.PurchaseOrders.CostPrice,
-        //         Quantity = j.PurchaseOrders.Quantity
-        //     }).ToList()
-        // }).ToList();
-        // return result;
-
         var query = from u in _context.Purchases
                     join s in _context.Supplier on u.Id equals s.Id
                     select new GetPurchaseDto
