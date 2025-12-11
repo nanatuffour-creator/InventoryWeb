@@ -2,6 +2,7 @@ using System;
 using InventoryWeb.Data;
 using InventoryWeb.Dto;
 using InventoryWeb.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace InventoryWeb.Services;
 
@@ -36,19 +37,52 @@ public class PurchaseService(DatabaseContext context)
         _context.SaveChanges();
     }
 
-    public IEnumerable<PurchasesEntity> GetPurchase()
+    public IEnumerable<GetPurchaseDto> GetPurchase()
     {
-        return [.. _context.Purchases];
+        // var result = _context.Purchases
+        // .Include(i => i.PurchaseOrders)
+        // .Include(y => y.Suppliers)
+        // .ThenInclude(m => m.Product)
+        // .Select(j => new GetPurchaseDto
+        // {
+        //     PurchaseId = j.PurchaseId,
+        //     SupplierName = j.Suppliers.Name,
+        //     Amount = j.Amount,
+        //     Date = j.Date,
+        //     Stat = j.Stat,
+        //     PurchaseOrders = j.PurchaseOrders.Select(x => new GetPurchaseOrdersDto
+        //     {
+        //         ProductName = j.Product.Name,
+        //         CostPrice = j.PurchaseOrders.CostPrice,
+        //         Quantity = j.PurchaseOrders.Quantity
+        //     }).ToList()
+        // }).ToList();
+        // return result;
+
+        var query = from u in _context.Purchases
+                    join s in _context.Supplier on u.Id equals s.Id
+                    select new GetPurchaseDto
+                    {
+                        PurchaseId = u.PurchaseId,
+                        SupplierName = s.Name,
+                        Amount = u.Amount,
+                        Date = u.Date,
+                        Stat = u.Stat,
+                        PurchaseOrders = (
+                            from m in _context.PurchaseOrder
+                            join g in _context.Products on m.ProductId equals g.ProductId
+                            where m.PurchaseId == u.PurchaseId
+                            select new GetPurchaseOrdersDto
+                            {
+                                ProductName = g.ProductName,
+                                CostPrice = m.CostPrice,
+                                Quantity = m.Quantity
+                            }
+                        ).ToList()
+                    };
+
+        return [.. query];
     }
 
-    // public bool EditPurchase(int id)
-    // {
-    //     var f = _context.Purchases.FirstOrDefault(p => p.Id == id);
 
-    //     if (f is null) 
-    //         return false;
-
-
-    //     return true;
-    // }
 }

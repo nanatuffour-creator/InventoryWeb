@@ -18,6 +18,24 @@ public class PurchaseOrderDto
     public int PurchaseItemId { get; set; }
     public decimal CostPrice { get; set; }
     public int Quantity { get; set; }
-    public int PurchaseId { get; set; } 
-    public int ProductId { get; set; } 
+    public int PurchaseId { get; set; }
+    public int ProductId { get; set; }
+}
+
+public class GetPurchaseDto
+{
+    public int PurchaseId { get; set; }
+    public string? SupplierName { get; set; }
+    public decimal Amount { get; set; }
+    public DateOnly Date { get; set; }
+    public Status Stat { get; set; }
+    public List<GetPurchaseOrdersDto>? PurchaseOrders { get; set; }
+}
+
+public class GetPurchaseOrdersDto
+{
+    public string? ProductName { get; set; }
+    public decimal CostPrice { get; set; }
+    public int Quantity { get; set; }
+
 }
