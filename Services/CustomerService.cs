@@ -49,4 +49,16 @@ public class CustomerService(DatabaseContext context)
         _context.SaveChanges();
         return true;
     }
+
+    public int GetCustomersLast7Days()
+    {
+        DateTime today = DateTime.UtcNow;
+        DateTime last7Days = today.AddDays(-7);
+
+        int countLast7Days = _context.Customers
+            .Where(i => i.CreatedAt >= last7Days && i.CreatedAt <= today).Count();
+
+        return countLast7Days;
+    }
+
 }

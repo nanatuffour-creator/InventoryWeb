@@ -12,4 +12,5 @@ public class Supplier
     [Required]
     public string? Phone { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public ICollection<PurchasesEntity>? Purchases { get; set; }  = new List<PurchasesEntity>(); // Navigation Property
 }

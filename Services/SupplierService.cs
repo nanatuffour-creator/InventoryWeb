@@ -10,9 +10,17 @@ public class SupplierService(DatabaseContext context)
 {
     private readonly DatabaseContext _context = context;
 
-    public void AddSupplier(Supplier sup)
+    public void AddSupplier(SuppliersDto dto)
     {
-        _context.Supplier.Add(sup);
+        var newSupplier = new Supplier
+        {
+            Id = dto.Id,
+            Name = dto.Name,
+            Email = dto.Email,
+            Phone = dto.Phone,
+            CreatedAt = dto.CreatedAt
+        };
+        _context.Supplier.Add(newSupplier);
         _context.SaveChanges();
     }
 

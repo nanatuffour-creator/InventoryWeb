@@ -10,37 +10,6 @@ public class InvoiceService(DatabaseContext context)
 {
     private readonly DatabaseContext _context = context;
 
-
-    public void AddInvoice(InvoiceDto dto)
-    {
-        if (dto.TotalAmount <= 0)
-        {
-            Results.BadRequest("Total Amount must be greater than 0");
-            return; // make sure to stop execution
-        }
-
-        var invoice = new Invoice
-        {
-            InvoiceId = dto.InvoiceId,
-            CustomerId = dto.CustomerId,
-            TotalAmount = dto.TotalAmount,
-            CreatedAt = dto.CreatedAt,
-            InvoiceItems = dto.Items?
-                .Select(i => new InvoiceItem
-                {
-                    InvoiceItemId = i.InvoiceItemId,
-                    ProductId = i.ProductId,
-                    InvoiceId = dto.InvoiceId,
-                    SellingPrice = i.SellingPrice,
-                    Quantity = i.Quantity
-                })
-                .ToList()
-        };
-
-        _context.Invoices.Add(invoice);
-        _context.SaveChanges();
-    }
-
     public IEnumerable<InvoiceGetDto> GetInvoices()
     {
         var result = _context.Invoices
@@ -91,6 +60,34 @@ public class InvoiceService(DatabaseContext context)
     public decimal GetInvoicesTotal()
     {
         return _context.Invoices.Sum(i => i.TotalAmount);
+    }
+
+    public decimal GetInvoicesTotalByDate()
+    {
+        DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
+        DateOnly last30Days = today.AddDays(-30);
+
+        var totalLast30Days = _context.Invoices
+            .Where(i => i.CreatedAt >= last30Days && i.CreatedAt <= today)
+            .Sum(i => i.TotalAmount);
+
+        var totalAllInvoices = _context.Invoices.Sum(i => i.TotalAmount);
+
+        if (totalAllInvoices == 0) return 0;
+
+        var percentage = (totalLast30Days / totalAllInvoices) * 100;
+        return Math.Round(percentage, 0);
+    }
+
+    public decimal GetInvoicesTotalForToday()
+    {
+        DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+        // Count invoices created today
+        int countToday = _context.Invoices
+            .Count(i => i.CreatedAt == today);
+
+        return countToday;
     }
 
 }

@@ -39,5 +39,19 @@ namespace InventoryWeb.Controllers
             var total = _invoiceService.GetInvoicesTotal();
             return Ok(total);
         }
+
+        [HttpGet("percentage")]
+        public IActionResult GetTotalPercentage()
+        {
+            var total = _invoiceService.GetInvoicesTotalByDate();
+            return Ok(total);
+        }
+
+        [HttpGet("today")]
+        public IActionResult GetTotalForToday()
+        {
+            var total = _invoiceService.GetInvoicesTotalForToday();
+            return Ok(total);
+        }
     }
 }

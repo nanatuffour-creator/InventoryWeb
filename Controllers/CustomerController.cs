@@ -39,5 +39,12 @@ namespace InventoryWeb.Controllers
             _customerServices.DeleteCustomer(id);
             return Ok(new { message = "Customer Deleted Successfully" });
         }
+
+        [HttpGet("today")]
+        public IActionResult GetCustomersLast7Days()
+        {
+            var total = _customerServices.GetCustomersLast7Days();
+            return Ok(total);
+        }
     }
 }

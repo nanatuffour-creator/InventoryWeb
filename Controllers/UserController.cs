@@ -27,6 +27,10 @@ namespace InventoryWeb.Controllers
 
             if (user == null)
                 return BadRequest(new { message = "Invalid email or password." });
+            else if (user.Email != login.Email)
+                return BadRequest(new { message = "Invalid email or password." });
+            else if (user.Password != login.Password)
+                return BadRequest(new { message = "Invalid email or password." });
             else if (user.Email != login.Email || user.Password != login.Password)
                 return BadRequest(new { message = "Invalid email or password." });
             else

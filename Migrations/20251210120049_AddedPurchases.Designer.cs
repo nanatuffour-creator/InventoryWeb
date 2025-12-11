@@ -4,6 +4,7 @@ using InventoryWeb.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InventoryWeb.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20251210120049_AddedPurchases")]
+    partial class AddedPurchases
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -157,36 +160,6 @@ namespace InventoryWeb.Migrations
                     b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("InventoryWeb.Entities.PurchaseOrderEntity", b =>
-                {
-                    b.Property<int>("PurchaseItemId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PurchaseItemId"));
-
-                    b.Property<decimal>("CostPrice")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PurchaseId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.HasKey("PurchaseItemId");
-
-                    b.HasIndex("ProductId");
-
-                    b.HasIndex("PurchaseId");
-
-                    b.ToTable("PurchaseOrder");
-                });
-
             modelBuilder.Entity("InventoryWeb.Entities.PurchasesEntity", b =>
                 {
                     b.Property<int>("PurchaseId")
@@ -196,7 +169,6 @@ namespace InventoryWeb.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PurchaseId"));
 
                     b.Property<decimal>("Amount")
-                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateOnly>("Date")
@@ -328,25 +300,6 @@ namespace InventoryWeb.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("InventoryWeb.Entities.PurchaseOrderEntity", b =>
-                {
-                    b.HasOne("InventoryWeb.Entities.ProductsEntities", "Products")
-                        .WithMany("PurchaseOrders")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("InventoryWeb.Entities.PurchasesEntity", "Purchases")
-                        .WithMany("PurchaseOrders")
-                        .HasForeignKey("PurchaseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Products");
-
-                    b.Navigation("Purchases");
-                });
-
             modelBuilder.Entity("InventoryWeb.Entities.PurchasesEntity", b =>
                 {
                     b.HasOne("InventoryWeb.Entities.Supplier", "Suppliers")
@@ -376,13 +329,6 @@ namespace InventoryWeb.Migrations
             modelBuilder.Entity("InventoryWeb.Entities.ProductsEntities", b =>
                 {
                     b.Navigation("InvoiceItems");
-
-                    b.Navigation("PurchaseOrders");
-                });
-
-            modelBuilder.Entity("InventoryWeb.Entities.PurchasesEntity", b =>
-                {
-                    b.Navigation("PurchaseOrders");
                 });
 
             modelBuilder.Entity("InventoryWeb.Entities.Supplier", b =>

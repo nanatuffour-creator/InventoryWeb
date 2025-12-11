@@ -13,9 +13,9 @@ namespace InventoryWeb.Controllers
         private readonly SupplierService _supplierService = supplierService;
 
         [HttpPost("add")]
-        public IActionResult AddSupplier(Supplier sup)
+        public IActionResult AddSupplier(SuppliersDto dto)
         {
-            _supplierService.AddSupplier(sup);
+            _supplierService.AddSupplier(dto);
             return Ok(new { message = "Supplier Added." });
         }
 
