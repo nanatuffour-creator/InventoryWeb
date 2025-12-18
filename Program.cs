@@ -1,6 +1,9 @@
+using System.Text;
 using InventoryWeb.Data;
 using InventoryWeb.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +23,24 @@ builder.Services.AddCors(options =>
 builder.Services.AddDbContextPool<DatabaseContext>((o) =>
 {
     o.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = "JwtBearer";
+    options.DefaultChallengeScheme = "JwtBearer";
+}).AddJwtBearer("JwtBearer", options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = "yourApp",
+        ValidAudience = "yourUsers",
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your_super_secret_key_123!"))
+    };
 });
 
 builder.Services.AddScoped<UserService>();
@@ -50,7 +71,8 @@ if (app.Environment.IsDevelopment())
 }
 app.UseCors("AllowAngularApp");
 // app.UseHttpsRedirection();
-
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 app.Run();
 

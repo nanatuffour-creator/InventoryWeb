@@ -48,21 +48,13 @@ namespace InventoryWeb.Controllers
         }
 
         [HttpGet("total")]
-        public Decimal GetTotalPurchase()
-        {
-            return _service.GetTotalPurchase();
-        }
+        public Decimal GetTotalPurchase() => _service.GetTotalPurchase();
 
         [HttpGet("pending")]
-        public int GetPendingPurchases()
-        {
-            return _service.GetPendingOrders();
-        }
+        public int GetPendingPurchases() => _service.GetPendingOrders();
 
         [HttpGet("completed")]
-        public int GetCompletedPurchases()
-        {
-            return _service.GetCompletedOrders();
-        }
+        public int GetCompletedPurchases() => _service.GetCompletedOrders();
+
     }
 }
