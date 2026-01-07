@@ -1,16 +1,21 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text;
 using InventoryWeb.Data;
 using InventoryWeb.Dto;
 using InventoryWeb.Entities;
 using InventoryWeb.Enum;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 
 namespace InventoryWeb.Services;
 
-public class UserService(DatabaseContext context)
+public class UserService(DatabaseContext context, IConfiguration configuration)
 {
     private readonly DatabaseContext _context = context;
-
+    private static readonly UserEntities users = new();
     public void AddUser(UserDto dto)
     {
         var lastUser = _context.User
@@ -27,32 +32,20 @@ public class UserService(DatabaseContext context)
                 nextNumber = lastNumber + 1;
             }
         }
-
+        var hashPassword = new PasswordHasher<UserEntities>().HashPassword(users, dto.Password!);
+        var hashPasswords = new PasswordHasher<UserEntities>().HashPassword(users, dto.ConfirmPassword!);
         var user = new UserEntities
         {
-            UserId = dto.UserId,
+            // UserId = dto.UserId,
             FirstName = dto.FirstName,
             LastName = dto.LastName,
             Email = dto.Email,
-            Password = dto.Password,
-            ConfirmPassword = dto.ConfirmPassword,
+            Password = hashPassword,
+            ConfirmPassword = hashPasswords,
             Role = dto.Role,
             CreatedAt = dto.CreatedAt
         };
 
-        // byte[] salt = RandomNumberGenerator.GetBytes(128 / 8);
-        // string hash = Convert.ToBase64String(KeyDerivation.Pbkdf2(
-        //     password: user.Password!,
-        //     salt: salt!,
-        //     prf: KeyDerivationPrf.HMACSHA512,
-        //     iterationCount: 100000,
-        //     numBytesRequested: 512 / 8
-        // ));
-
-        // Store salt:hash format
-        // string saltHash = Convert.ToBase64String(salt) + ":" + hash;
-        // user.Password = saltHash;
-        // user.ConfirmPassword = saltHash;
         user.UserId = GenerateUserId(nextNumber, user.Role!.Value);
         _context.User.Add(user);
         _context.SaveChanges();
@@ -69,33 +62,34 @@ public class UserService(DatabaseContext context)
         };
     }
 
-    public UserEntities? VerifyUser(string email, string password)
+    public async Task<string?> VerifyUser(LoginDto login)
     {
-        var user = _context.User.FirstOrDefault(u => u.Email == email);
-        if (user == null) return null;
+        var user = _context.User.FirstOrDefault(u => u.Email == login.Email);
+        if (user == null) return "User not Found";
 
-        // var parts = user.Password!.Split(':');
-        // if (parts.Length != 2) return null;
+        if (new PasswordHasher<UserEntities>().VerifyHashedPassword(users, user.Password!, login.Password!) == PasswordVerificationResult.Failed)
+            return "Invalid Password or Username";
 
-        // byte[] salt = Convert.FromBase64String(parts[0]);
-        // string storedHash = parts[1];
+        var claim = new List<Claim>
+        {
+            new Claim(ClaimTypes.Name, user.FirstName!),
+            new Claim(ClaimTypes.Name, user.LastName!),
+            new Claim(ClaimTypes.NameIdentifier, user.UserId!)
+        };
 
-        // string enteredHash = Convert.ToBase64String(KeyDerivation.Pbkdf2(
-        //     password: password,
-        //     salt: salt,
-        //     prf: KeyDerivationPrf.HMACSHA512,
-        //     iterationCount: 100000,
-        //     numBytesRequested: 512 / 8
-        // ));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetValue<string>("AppSettings:Token")!));
 
-        // // Use constant-time comparison for security
-        // if (CryptographicOperations.FixedTimeEquals(
-        //     Convert.FromBase64String(storedHash),
-        //     Convert.FromBase64String(enteredHash)))
-        // {
-        //     return user;
-        // }
-        return user;
+        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
+
+        var tokenDescriptor = new JwtSecurityToken(
+            issuer: configuration.GetValue<string>("AppSettings:Issuer"),
+            audience: configuration.GetValue<string>("AppSettings:Audience"),
+            claims: claim,
+            expires: DateTime.UtcNow.AddDays(1),
+            signingCredentials: credentials
+        );
+
+        return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
     }
 
 

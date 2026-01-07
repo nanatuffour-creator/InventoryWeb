@@ -4,6 +4,7 @@ using InventoryWeb.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,17 +58,18 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     });
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-// builder.Services.AddOpenApi();
+// builder.Services.AddSwaggerGen();
+builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-    // app.MapOpenApi();
+    // app.UseSwagger();
+    // app.UseSwaggerUI();
+    app.MapOpenApi();
+    app.MapScalarApiReference();
 }
 app.UseCors("AllowAngularApp");
 // app.UseHttpsRedirection();

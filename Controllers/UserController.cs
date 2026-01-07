@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace InventoryWeb.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class UserController(UserService userService) : ControllerBase
@@ -25,18 +24,10 @@ namespace InventoryWeb.Controllers
 
         [HttpPost("login")]
         [AllowAnonymous]
-        public IActionResult VerifyUser([FromBody] LoginEntities login)
+        public async Task<IActionResult> VerifyUser([FromBody] LoginDto login)
         {
-            var user = _userService.VerifyUser(login.Email!, login.Password!);
-
-            if (user == null)
-                return BadRequest(new { message = "Invalid email or password." });
-            else if (user.Email != login.Email)
-                return BadRequest(new { message = "Invalid email." });
-            else if (user.Password != login.Password)
-                return BadRequest(new { message = "Invalid password." });
-            else
-                return Ok(new { message = "Login Successful" });
+            var user = await _userService.VerifyUser(login);
+            return Ok(new {message = user});
 
         }
     }
